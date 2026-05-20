@@ -76,44 +76,46 @@ function sampleOffscreen(
 }
 
 // Formation builders
-// Placeholder portrait
-function buildPortrait(W: number, H: number): RawPt[] {
-  const s = Math.min(W, H) * 0.62;
-  const ox = (W - s) / 2;
-  const oy = (H - s) / 2;
-  return sampleOffscreen(
-    (ctx) => {
-      // Head
-      ctx.fillStyle = '#ddc9a8';
-      ctx.beginPath();
-      ctx.ellipse(s * 0.5, s * 0.38, s * 0.19, s * 0.25, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // Neck
-      ctx.fillRect(s * 0.44, s * 0.60, s * 0.12, s * 0.09);
-      // Shoulders (bottom half of ellipse)
-      ctx.beginPath();
-      ctx.ellipse(s * 0.5, s * 0.76, s * 0.28, s * 0.14, 0, 0, Math.PI);
-      ctx.fill();
-      // Hair
-      ctx.fillStyle = '#1a0d00';
-      ctx.beginPath();
-      ctx.ellipse(s * 0.5, s * 0.21, s * 0.20, s * 0.13, 0, Math.PI, Math.PI * 2);
-      ctx.fill();
-      // Eyes
-      ctx.fillStyle = '#2a1500';
-      for (const ex of [0.43, 0.57]) {
-        ctx.beginPath();
-        ctx.ellipse(s * ex, s * 0.34, s * 0.026, s * 0.018, 0, 0, Math.PI * 2);
-        ctx.fill();
+// Sample bright (white) pixels from the inverted B&W portrait photo
+function buildPortraitFromImage(img: HTMLImageElement, W: number, H: number): RawPt[] {
+  const maxSize = Math.min(W, H) * 0.62;
+  const aspect = img.naturalWidth / img.naturalHeight;
+  const iw = Math.round(aspect >= 1 ? maxSize : maxSize * aspect);
+  const ih = Math.round(aspect >= 1 ? maxSize / aspect : maxSize);
+  const ox = (W - iw) / 2;
+  const oy = (H - ih) / 2;
+
+  const c = document.createElement('canvas');
+  c.width = iw;
+  c.height = ih;
+  const ctx = c.getContext('2d')!;
+  ctx.drawImage(img, 0, 0, iw, ih);
+
+  const { data } = ctx.getImageData(0, 0, iw, ih);
+  const pts: RawPt[] = [];
+
+  for (let y = 0; y < ih; y += 2) {
+    for (let x = 0; x < iw; x += 2) {
+      const i = (y * iw + x) * 4;
+      // Luma-weighted brightness — sample bright areas of the inverted image
+      const luma = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+      if (luma > 100) {
+        pts.push({
+          x: ox + x - W / 2,
+          y: H / 2 - (oy + y),
+          r: (data[i]     / 255) * COLOR_SCALE,
+          g: (data[i + 1] / 255) * COLOR_SCALE,
+          b: (data[i + 2] / 255) * COLOR_SCALE,
+        });
       }
-      // Mouth
-      ctx.fillStyle = '#8a3a2a';
-      ctx.beginPath();
-      ctx.arc(s * 0.5, s * 0.476, s * 0.058, 0.15, Math.PI - 0.15);
-      ctx.fill();
-    },
-    s, s, ox, oy, W, H, N
-  );
+    }
+  }
+
+  for (let i = pts.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    [pts[i], pts[j]] = [pts[j], pts[i]];
+  }
+  return pts.slice(0, N);
 }
 
 // Code-editor window — represents a project
@@ -203,7 +205,20 @@ function ParticleSystem({ scrollTRef }: ParticleSystemProps) {
     const H = size.height;
     if (!W || !H) return;
 
-    const a = buildPortrait(W, H);
+    let cancelled = false;
+
+    const img = new Image();
+    img.onload = () => {
+      if (cancelled) return;
+      init(buildPortraitFromImage(img, W, H));
+    };
+    img.onerror = () => {
+      if (cancelled) return;
+      console.warn('portrait.png failed to load');
+    };
+    img.src = '/portrait.png';
+
+    function init(a: RawPt[]) {
     const b = buildProject(W, H);
     const count = Math.min(a.length, b.length, N);
 
@@ -243,6 +258,9 @@ function ParticleSystem({ scrollTRef }: ParticleSystemProps) {
       pts.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
       pts.geometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
     }
+    }
+
+    return () => { cancelled = true; };
   }, [size.width, size.height]);
 
   useFrame(() => {
