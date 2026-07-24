@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local mockup files, not part of the app.
+    "Particle effect portfolio website/**",
   ]),
 ]);
 

@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# my-portfolio
 
-## Getting Started
+My portfolio site. 3,200 particles on a canvas morph from a portrait into a shape for each project as you scroll.
 
-First, run the development server:
+Built with Next.js and a plain 2D canvas.
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build
+npm test
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The images and resume in `public/` aren't checked in, so they need to be added before running.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  lib/particles/        particle engine (no React)
+    config.ts           tuning constants
+    engine.ts           render loop
+    sampling.ts         image pixels -> particle positions
+    shapes.ts           shapes drawn in code, shown until images load
+    math.ts             lerp, easing, seeded random
+    types.ts
+  content/projects.ts   project text, links and images
+  components/           page UI
+  hooks/                nav dot scroll animation
+```
 
-## Learn More
+## How it works
 
-To learn more about Next.js, take a look at the following resources:
+Each formation is drawn into a 400x400 offscreen canvas, either from an image or from code in `shapes.ts`. Bright pixels become target points (for the rover render it uses edges instead, since brightness just gives a solid blob). Every formation is resampled to exactly 3,200 points so particle i moves from point i in one formation to point i in the next.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The engine runs its own `requestAnimationFrame` loop and sets styles on the text panels and nav dots directly, so React doesn't re-render while scrolling.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+One viewport of scrolling equals one formation. Each formation holds still for a bit around its scroll position (`SEGMENT_HOLD` in `config.ts`) before it breaks apart.
 
-## Deploy on Vercel
+## Adding a project
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Add an entry to `PORTFOLIO_STATES` in `app/content/projects.ts`.
+2. Add a shape to `FORMATION_SHAPES` in `app/lib/particles/shapes.ts` and bump `N_STATES` in `config.ts`.
+3. Put the image in `public/` and add it to `STATE_IMAGES`, adjusting `minLuma` until the background drops out.
