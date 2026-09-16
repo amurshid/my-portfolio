@@ -14,6 +14,7 @@ import {
   MOUSE_REPEL_STRENGTH,
   N_STATES,
   PARTICLE_COUNT,
+  REVEAL_MS,
   SEGMENT_HOLD,
 } from "./config";
 import { clamp, lerp, segmentMorphProgress, smoothstep } from "./math";
@@ -54,6 +55,8 @@ export class ParticleEngine {
 
   private raf = 0;
   private startTime = 0;
+  /** When `reveal()` was called. Particles stay hidden until then. */
+  private revealTime: number | null = null;
 
   private vw = 0;
   private vh = 0;
@@ -96,6 +99,11 @@ export class ParticleEngine {
     this.startTime = performance.now();
     this.tick = this.tick.bind(this);
     this.raf = requestAnimationFrame(this.tick);
+  }
+
+  /** Fade the particles in. Nothing is drawn before this is called. */
+  reveal(): void {
+    if (this.revealTime === null) this.revealTime = performance.now();
   }
 
   /** Stop the loop and remove listeners. */
@@ -215,7 +223,12 @@ export class ParticleEngine {
       this.scrollHintEl.style.opacity = progress < 0.15 ? "1" : "0";
     }
 
-    this.drawParticles(t, idxA, idxB, morphT, scatter);
+    const appear =
+      this.revealTime === null
+        ? 0
+        : smoothstep(clamp((now - this.revealTime) / REVEAL_MS, 0, 1));
+
+    this.drawParticles(t, idxA, idxB, morphT, scatter, appear);
     this.raf = requestAnimationFrame(this.tick);
   }
 
@@ -255,13 +268,17 @@ export class ParticleEngine {
     idxA: number,
     idxB: number,
     morphT: number,
-    scatter: number
+    scatter: number,
+    appear: number
   ): void {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.vw, this.vh);
     const A = this.targets[idxA];
     const B = this.targets[idxB];
-    if (!A || !B) return;
+    if (!A || !B || appear === 0) return;
+
+    // While fading in, particles start slightly spread out and settle.
+    const spread = Math.max(scatter, (1 - appear) * 0.4);
 
     const scaleF = this.scale;
     const cx = this.centerX;
@@ -276,9 +293,9 @@ export class ParticleEngine {
       const bx = lerp(a.x, b.x, morphT) * scaleF;
       const by = lerp(a.y, b.y, morphT) * scaleF;
       const drift =
-        Math.sin(t * 0.6 + p.phase) * p.floatAmp * (0.3 + scatter * 0.7);
-      const sx = Math.cos(p.scatterAngle) * p.scatterRadius * scatter;
-      const sy = Math.sin(p.scatterAngle) * p.scatterRadius * scatter + drift;
+        Math.sin(t * 0.6 + p.phase) * p.floatAmp * (0.3 + spread * 0.7);
+      const sx = Math.cos(p.scatterAngle) * p.scatterRadius * spread;
+      const sy = Math.sin(p.scatterAngle) * p.scatterRadius * spread + drift;
 
       let px = cx + bx + sx;
       let py = cy + by + sy;
@@ -303,8 +320,9 @@ export class ParticleEngine {
       const gg = lerp(a.g, b.g, morphT);
       const bb = lerp(a.b, b.b, morphT);
       const alpha =
-        0.55 +
-        0.35 * (1 - scatter * 0.5) * (0.7 + 0.3 * Math.sin(t * 2 + p.phase));
+        appear *
+        (0.55 +
+          0.35 * (1 - scatter * 0.5) * (0.7 + 0.3 * Math.sin(t * 2 + p.phase)));
 
       ctx.fillStyle = `rgba(${rr | 0},${gg | 0},${bb | 0},${alpha.toFixed(2)})`;
       ctx.beginPath();

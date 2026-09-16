@@ -39,6 +39,9 @@ export const SEGMENT_HOLD = 0.12;
  */
 export const FORMATION_CENTER_Y = 0.37;
 
+/** How long the particles take to fade in and settle once revealed, in ms. */
+export const REVEAL_MS = 900;
+
 /** Radius, in px, within which the cursor pushes particles aside. */
 export const MOUSE_REPEL_RADIUS = 130;
 

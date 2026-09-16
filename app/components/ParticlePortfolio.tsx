@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { preload } from "react-dom";
 import { PORTFOLIO_STATES, STATE_IMAGES } from "@/app/content/projects";
 import { useSmoothScrollTo } from "@/app/hooks/useSmoothScrollTo";
 import { N_STATES } from "@/app/lib/particles/config";
@@ -19,6 +20,8 @@ import SocialLinks from "./SocialLinks";
  * The page is one viewport tall per state plus a bit extra. The canvas is
  * fixed, so scrolling just drives the morph.
  */
+const PORTRAIT_SRC = STATE_IMAGES.find((s) => s.index === 0)!.src;
+
 export default function ParticlePortfolio() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollHintRef = useRef<HTMLDivElement>(null);
@@ -26,6 +29,10 @@ export default function ParticlePortfolio() {
   const dotRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const scrollToState = useSmoothScrollTo();
+
+  // Start fetching the portrait with the page instead of after hydration,
+  // since nothing is drawn until it arrives.
+  preload(PORTRAIT_SRC, { as: "image" });
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -38,17 +45,26 @@ export default function ParticlePortfolio() {
     });
     engine.start();
 
-    // Procedural shapes show until each image loads.
+    // The particles appear once the portrait is ready, so the placeholder face
+    // never flashes. If the portrait fails, the placeholder is shown instead.
+    // Other states use their procedural shape until their image loads.
     const images: HTMLImageElement[] = [];
     for (const { index, src, options } of STATE_IMAGES) {
       const img = new Image();
-      img.onload = () => engine.setStateImage(index, img, options);
+      img.onload = () => {
+        engine.setStateImage(index, img, options);
+        if (index === 0) engine.reveal();
+      };
+      if (index === 0) img.onerror = () => engine.reveal();
       img.src = src;
       images.push(img);
     }
 
     return () => {
-      for (const img of images) img.onload = null;
+      for (const img of images) {
+        img.onload = null;
+        img.onerror = null;
+      }
       engine.destroy();
     };
   }, []);

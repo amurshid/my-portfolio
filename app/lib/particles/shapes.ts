@@ -15,7 +15,7 @@ export type FormationShape = {
 
 type Vec2 = { x: number; y: number };
 
-/** Simple face shown until the portrait loads. */
+/** Simple face, only shown if the portrait fails to load. */
 export const drawFacePlaceholder: ShapeDrawer = (c) => {
   c.fillStyle = "#ffffff";
   c.beginPath();
