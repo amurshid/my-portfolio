@@ -44,3 +44,7 @@ One viewport of scrolling equals one formation. Each formation holds still for a
 1. Add an entry to `PORTFOLIO_STATES` in `app/content/projects.ts`.
 2. Add a shape to `FORMATION_SHAPES` in `app/lib/particles/shapes.ts` and bump `N_STATES` in `config.ts`.
 3. Put the image in `public/` and add it to `STATE_IMAGES`, adjusting `minLuma` until the background drops out.
+
+## License
+
+© Ahnaf Murshid. All rights reserved, including the photo, resume and project images. The fonts in `app/fonts/` are under the SIL Open Font License (see the `-OFL.txt` files next to them).
