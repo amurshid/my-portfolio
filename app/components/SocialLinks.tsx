@@ -24,8 +24,8 @@ const LINKS: Link[] = [
 ];
 
 /**
- * Social links, positioned by `.social-links` in globals.css. Labels slide out
- * on hover.
+ * Social links in the bottom-left corner (top-right on phones, see globals.css).
+ * Labels slide out on hover.
  */
 export default function SocialLinks() {
   const [hovered, setHovered] = useState<number | null>(null);
@@ -36,8 +36,11 @@ export default function SocialLinks() {
       className="social-links"
       style={{
         position: "fixed",
+        left: 40,
+        bottom: 30,
         zIndex: Z.chrome,
         display: "flex",
+        flexDirection: "column",
         gap: 14,
         alignItems: "flex-start",
       }}

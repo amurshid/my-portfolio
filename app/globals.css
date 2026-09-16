@@ -25,21 +25,15 @@ html, body {
 
 ::selection { background: #7dd3fc; color: #0a0a0f; }
 
-/* Social links: a column bottom-left, or a row top-right on phones where the
-   column would sit on top of the panel text. */
-.social-links {
-  left: 40px;
-  bottom: 30px;
-  flex-direction: column;
-}
-
+/* On phones the social links column would sit on top of the panel text, so it
+   becomes a row in the top-right corner. !important beats the inline styles. */
 @media (max-width: 640px) {
   .social-links {
-    left: auto;
-    bottom: auto;
-    top: 44px;
-    right: 24px;
-    flex-direction: row;
+    left: auto !important;
+    bottom: auto !important;
+    top: 44px !important;
+    right: 24px !important;
+    flex-direction: row !important;
   }
   .social-links .social-label {
     display: none;
