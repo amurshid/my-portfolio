@@ -14,7 +14,7 @@ export type PortfolioState = {
   eyebrow: string;
   eyebrowColor: string;
   title: string;
-  description: string;
+  description?: string;
   tags: string[];
   /** Accessible name for this state's navigation dot. */
   ariaLabel: string;
@@ -28,7 +28,6 @@ export const PORTFOLIO_STATES: PortfolioState[] = [
     eyebrow: "Hey, I'm Ahnaf",
     eyebrowColor: COLORS.cyan,
     title: SITE.tagline,
-    description: "Scroll to watch the projects take shape.",
     tags: [],
     ariaLabel: "Intro",
   },

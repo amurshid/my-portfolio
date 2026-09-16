@@ -130,6 +130,8 @@ export default function ProjectPanels({ states, panelRefs }: Props) {
               transform: "translate(-50%,0)",
               width: "100%",
               opacity: isHero ? 1 : 0,
+              // Keeps the intro heading clear of the scroll hint below it.
+              paddingBottom: isHero ? 32 : 0,
               fontFamily: FONT_DISPLAY,
             }}
           >
@@ -147,17 +149,19 @@ export default function ProjectPanels({ states, panelRefs }: Props) {
 
             <PanelTitle state={state} isHero={isHero} />
 
-            <p
-              style={{
-                fontSize: 15,
-                color: COLORS.muted,
-                margin: isHero ? "16px 0 0" : "14px 0 0",
-                fontFamily: FONT_BODY,
-                lineHeight: isHero ? undefined : 1.6,
-              }}
-            >
-              {state.description}
-            </p>
+            {state.description && (
+              <p
+                style={{
+                  fontSize: 15,
+                  color: COLORS.muted,
+                  margin: "14px 0 0",
+                  fontFamily: FONT_BODY,
+                  lineHeight: 1.6,
+                }}
+              >
+                {state.description}
+              </p>
+            )}
 
             {state.tags.length > 0 && (
               <div
