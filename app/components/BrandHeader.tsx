@@ -1,3 +1,4 @@
+import { SITE } from "@/app/lib/site";
 import { COLORS, FONT_DISPLAY, Z } from "@/app/lib/theme";
 
 /** Name and title, fixed top-left. */
@@ -21,7 +22,7 @@ export default function BrandHeader() {
           letterSpacing: "0.01em",
         }}
       >
-        Ahnaf Murshid
+        {SITE.name}
       </div>
       <div
         style={{
@@ -32,7 +33,7 @@ export default function BrandHeader() {
           marginTop: 2,
         }}
       >
-        ML Engineer &amp; Researcher
+        {SITE.role}
       </div>
     </div>
   );

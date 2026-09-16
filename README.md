@@ -26,6 +26,7 @@ app/
     math.ts             lerp, easing, seeded random
     types.ts
   content/projects.ts   project text, links and images
+  fonts/                TTFs for the link preview image
   components/           page UI
   hooks/                nav dot scroll animation
 ```

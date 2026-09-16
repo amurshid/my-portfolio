@@ -6,6 +6,7 @@ import {
   PORTRAIT_IMAGE_OPTIONS,
 } from "@/app/lib/particles/sampling";
 import type { StateImageOptions } from "@/app/lib/particles/types";
+import { SITE } from "@/app/lib/site";
 import { COLORS } from "@/app/lib/theme";
 
 export type PortfolioState = {
@@ -26,8 +27,7 @@ export const PORTFOLIO_STATES: PortfolioState[] = [
   {
     eyebrow: "Hey, I'm Ahnaf",
     eyebrowColor: COLORS.cyan,
-    title:
-      "I build machine learning systems that turn messy signals into working products.",
+    title: SITE.tagline,
     description: "Scroll to watch the projects take shape.",
     tags: [],
     ariaLabel: "Intro",
