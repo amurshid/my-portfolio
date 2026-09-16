@@ -18,12 +18,14 @@ const inter = Inter({
 const title = `${SITE.name} — ${SITE.role}`;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title,
   description: SITE.tagline,
   openGraph: {
     title,
     description: SITE.tagline,
     siteName: SITE.name,
+    url: "/",
     type: "website",
   },
   twitter: { card: "summary_large_image" },
