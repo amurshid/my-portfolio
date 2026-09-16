@@ -40,13 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# images
-portrait.png
-internet.png
-rover.png
-lung.png
-spotify.png
-resume.pdf
-
 # design
 Particle effect portfolio website/

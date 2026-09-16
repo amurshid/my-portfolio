@@ -14,8 +14,6 @@ npm test
 npm run lint
 ```
 
-The images and resume in `public/` aren't checked in, so they need to be added before running.
-
 ## Structure
 
 ```
