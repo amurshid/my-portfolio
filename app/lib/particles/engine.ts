@@ -239,7 +239,8 @@ export class ParticleEngine {
       const dot = this.dotEls[s];
       if (!dot) continue;
       const active = Math.round(progress) === s;
-      const accent = s % 2 === 0 ? COLORS.cyan : COLORS.violet;
+      // Matches the panel labels: intro and odd projects cyan, even projects violet.
+      const accent = s > 0 && s % 2 === 0 ? COLORS.violet : COLORS.cyan;
       dot.style.background = active ? accent : "transparent";
       dot.style.borderColor = accent;
       dot.style.transform = active ? "scale(1.4)" : "scale(1)";
