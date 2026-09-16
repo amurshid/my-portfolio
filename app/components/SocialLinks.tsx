@@ -23,20 +23,21 @@ const LINKS: Link[] = [
   { label: "Resume", href: RESUME_URL, external: true, icon: <DocIcon /> },
 ];
 
-/** Social links in the bottom-left corner. Labels slide out on hover. */
+/**
+ * Social links, positioned by `.social-links` in globals.css. Labels slide out
+ * on hover.
+ */
 export default function SocialLinks() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <nav
       aria-label="Social links"
+      className="social-links"
       style={{
         position: "fixed",
-        left: 40,
-        bottom: 30,
         zIndex: Z.chrome,
         display: "flex",
-        flexDirection: "column",
         gap: 14,
         alignItems: "flex-start",
       }}
@@ -66,6 +67,7 @@ export default function SocialLinks() {
           >
             {link.icon}
             <span
+              className="social-label"
               style={{
                 maxWidth: active ? 130 : 0,
                 opacity: active ? 1 : 0,

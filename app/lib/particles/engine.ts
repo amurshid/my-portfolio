@@ -136,7 +136,9 @@ export class ParticleEngine {
     this.vh = h;
     this.centerX = w / 2;
     this.centerY = h * FORMATION_CENTER_Y;
-    this.scale = clamp((Math.min(w, h) / BUFFER_SIZE) * 0.62, 0.55, 1.35);
+    // Phones have less room either side, so formations can take more of it.
+    const fill = w <= 640 ? 0.85 : 0.62;
+    this.scale = clamp((Math.min(w, h) / BUFFER_SIZE) * fill, 0.55, 1.35);
   }
 
   /** Rasterise every procedural shape, then replay any image-backed states. */
