@@ -89,7 +89,7 @@ export const STATE_IMAGES: StateImage[] = [
   { index: 1, src: "/rover.png", options: MODEL_IMAGE_OPTIONS },
   {
     index: 2,
-    src: "/internet.png",
+    src: "/encrypted_traffic.jpg",
     options: { ...PARTICLE_ART_IMAGE_OPTIONS, minLuma: 120 },
   },
   {
