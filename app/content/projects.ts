@@ -20,6 +20,8 @@ export type PortfolioState = {
   ariaLabel: string;
   /** GitHub repo URL, optional. */
   repo?: string;
+  /** YouTube video URL, optional. */
+  video?: string;
 };
 
 /** State 0 is the hero; states 1–4 are the projects, in scroll order. */
@@ -40,6 +42,7 @@ export const PORTFOLIO_STATES: PortfolioState[] = [
     tags: ["ROS", "SLAM", "Computer Vision"],
     ariaLabel: "Project 1",
     repo: "https://github.com/amurshid/autonomous-rover",
+    video: "https://youtu.be/bGFME8fE5SE",
   },
   {
     eyebrow: "Project 02",

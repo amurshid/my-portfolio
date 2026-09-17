@@ -2,7 +2,7 @@
 
 import type { PortfolioState } from "@/app/content/projects";
 import { COLORS, FONT_BODY, FONT_DISPLAY, Z } from "@/app/lib/theme";
-import { GitHubIcon } from "./icons";
+import { GitHubIcon, YouTubeIcon } from "./icons";
 
 type Props = {
   states: PortfolioState[];
@@ -10,39 +10,78 @@ type Props = {
   panelRefs: React.RefObject<(HTMLDivElement | null)[]>;
 };
 
-/** "View repository" chip shown after the tags. */
-function RepoLink({ state }: { state: PortfolioState }) {
-  if (!state.repo) return null;
+type LinkChipProps = {
+  href: string;
+  ariaLabel: string;
+  color: string;
+  border: string;
+  wash: string;
+  children: React.ReactNode;
+};
+
+/** Outlined link chip shown after the tags. */
+function LinkChip({ href, ariaLabel, color, border, wash, children }: LinkChipProps) {
   return (
     <a
-      href={state.repo}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${state.title} — view source on GitHub`}
+      aria-label={ariaLabel}
       style={{
         display: "inline-flex",
         alignItems: "center",
         gap: 6,
         fontSize: 12,
-        color: COLORS.cyan,
-        border: `1px solid ${COLORS.cyanBorder}`,
+        color,
+        border: `1px solid ${border}`,
         padding: "5px 12px",
         borderRadius: 20,
         textDecoration: "none",
         transition: "background 0.22s, border-color 0.22s",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = COLORS.cyanWash;
-        e.currentTarget.style.borderColor = COLORS.cyan;
+        e.currentTarget.style.background = wash;
+        e.currentTarget.style.borderColor = color;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = "transparent";
-        e.currentTarget.style.borderColor = COLORS.cyanBorder;
+        e.currentTarget.style.borderColor = border;
       }}
     >
-      <GitHubIcon size={13} />
-      View repository
+      {children}
     </a>
+  );
+}
+
+/** "View repository" and "YouTube" chips, when the project has them. */
+function ProjectLinks({ state }: { state: PortfolioState }) {
+  return (
+    <>
+      {state.repo && (
+        <LinkChip
+          href={state.repo}
+          ariaLabel={`${state.title} — view source on GitHub`}
+          color={COLORS.cyan}
+          border={COLORS.cyanBorder}
+          wash={COLORS.cyanWash}
+        >
+          <GitHubIcon size={13} />
+          View repository
+        </LinkChip>
+      )}
+      {state.video && (
+        <LinkChip
+          href={state.video}
+          ariaLabel={`${state.title} — watch the showcase video on YouTube`}
+          color={COLORS.red}
+          border={COLORS.redBorder}
+          wash={COLORS.redWash}
+        >
+          <YouTubeIcon size={13} />
+          YouTube
+        </LinkChip>
+      )}
+    </>
   );
 }
 
@@ -188,7 +227,7 @@ export default function ProjectPanels({ states, panelRefs }: Props) {
                     {tag}
                   </span>
                 ))}
-                <RepoLink state={state} />
+                <ProjectLinks state={state} />
               </div>
             )}
           </div>

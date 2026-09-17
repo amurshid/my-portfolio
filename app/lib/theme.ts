@@ -19,6 +19,10 @@ export const COLORS = {
   cyanWash: "rgba(125,211,252,0.1)",
   /** Alternate accent, used on even-numbered projects. */
   violet: "#a78bfa",
+  /** Video link chip. */
+  red: "#fca5a5",
+  redBorder: "rgba(252,165,165,0.35)",
+  redWash: "rgba(252,165,165,0.1)",
   /** Tag chip text and border. */
   chipText: "#c9d1e6",
   chipBorder: "#2a3245",
